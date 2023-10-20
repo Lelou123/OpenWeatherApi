@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
+    <ProjectReference Include="..\Weather.Domain\Weather.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Weather.Domain\Weather.Domain.csproj" />
+    <Folder Include="Dtos\" />
   </ItemGroup>
 
 </Project>

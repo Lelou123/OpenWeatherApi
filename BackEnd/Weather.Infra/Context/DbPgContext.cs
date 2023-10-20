@@ -5,8 +5,8 @@ namespace Weather.Infra.Context
 {
     public class DbPgContext : DbContext
     {
-
-        public DbSet<Domain.Entities.Weather> Weathers { get; set; }
+        public DbSet<CurrentWeather> CurrentWeathers { get; set; }
+        public DbSet<DailyWeather> DailyWeathers { get; set; }
         public DbSet<Location> Locations { get; set; }
 
 
