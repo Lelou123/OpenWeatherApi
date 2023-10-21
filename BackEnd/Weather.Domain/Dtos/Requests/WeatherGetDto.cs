@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Weather.Domain.Enums;
 
 namespace Weather.Domain.Dtos.Requests
 {
@@ -10,7 +11,7 @@ namespace Weather.Domain.Dtos.Requests
         [Required]
         public double Longitude { get; set; }
 
-        public string? Units { get; set; }
+        public EnUnits? Units { get; set; }
 
         public string? Lang { get; set; }
     }

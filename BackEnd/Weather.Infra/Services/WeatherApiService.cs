@@ -59,12 +59,12 @@ namespace Weather.Infra.Services
             request.AddParameter("lon", weatherGet.Longitude);
             
 
-            if (!string.IsNullOrEmpty(weatherGet.Units))
+            if (!string.IsNullOrEmpty(weatherGet.Units.ToString()))
             {
-                request.AddParameter("units", weatherGet.Units);
+                request.AddParameter("units", weatherGet.Units.ToString());
             }
 
-            if (!string.IsNullOrEmpty(weatherGet.Units))
+            if (!string.IsNullOrEmpty(weatherGet.Lang))
             {
                 request.AddParameter("lang", weatherGet.Lang);
             }

@@ -19,6 +19,7 @@ namespace WeatherApi.Controllers
         /// <summary>
         /// Recupera as informações climaticas do dia
         /// </summary>        
+        /// <param name="request">Parametros para recuperar as informações do clima </param>
         /// <returns>IActionResult</returns>
         /// <response code="201">Caso as informações sejam recuperadas com sucesso</response>
         [HttpGet()]
@@ -39,7 +40,8 @@ namespace WeatherApi.Controllers
 
         /// <summary>
         /// Recupera as informações climaticas dos proximos 5 dias
-        /// </summary>        
+        /// </summary>       
+        /// <param name="request">Parametros para recuperar as informações do clima </param>
         /// <returns>IActionResult</returns>
         /// <response code="201">Caso as informações sejam recuperadas com sucesso</response>
         [HttpGet()]

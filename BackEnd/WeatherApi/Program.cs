@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Weather.Application.Services;
+using Weather.Domain.Interfaces;
 using Weather.Domain.Interfaces.Repositories;
 using Weather.Domain.Interfaces.Services;
 using Weather.Domain.Interfaces.Services.ExternalServices;
@@ -10,6 +11,7 @@ using Weather.Infra.AutoMapper;
 using Weather.Infra.Context;
 using Weather.Infra.Repositories;
 using Weather.Infra.Services;
+using Weather.Infra.Validators;
 
 namespace WeatherApi
 {
@@ -86,6 +88,10 @@ namespace WeatherApi
             //Others Services
             builder.Services.AddScoped<IMappingService, AutoMapperService>();
             builder.Services.AddScoped<IWeatherApiService, WeatherApiService>();
+
+            //Validators
+            builder.Services.AddScoped<IWeatherGetDtoValidator, WeatherGetDtoValidator>();
+
         }
 
         private static void BuildRepositories(WebApplicationBuilder builder)
