@@ -1,6 +1,6 @@
-﻿namespace Weather.Domain.Interfaces.Services
+﻿namespace Weather.Domain.Interfaces.Services.ExternalServices
 {
-    public interface IAutoMapperService
+    public interface IMappingService
     {
         TDestination Map<TDestination>(object source);
         IEnumerable<TDestination> MapRange<TDestination>(IEnumerable<object> source);

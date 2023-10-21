@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Weather.Domain.Dtos.Requests;
 using Weather.Domain.Interfaces.Services;
 
 namespace WeatherApi.Controllers
@@ -16,16 +17,41 @@ namespace WeatherApi.Controllers
 
 
         /// <summary>
-        /// Recupera as informações climaticas do momento
+        /// Recupera as informações climaticas do dia
         /// </summary>        
         /// <returns>IActionResult</returns>
         /// <response code="201">Caso as informações sejam recuperadas com sucesso</response>
         [HttpGet()]
-        [Route("/WeatherForecast")]
-        public async Task<IActionResult> GetWeatherForecast()
+        [Route("/DailyWeather")]
+        public async Task<IActionResult> GetWeatherAsync([FromQuery]WeatherGetDto request)
         {
 
-            return null;
+            var response = await _weatherService.GetCurrentWeatherAsync(request);
+
+
+            if (!response.IsSuccess) return BadRequest(response.Message);
+
+            return Ok(response);
+        }
+
+
+
+
+        /// <summary>
+        /// Recupera as informações climaticas dos proximos 5 dias
+        /// </summary>        
+        /// <returns>IActionResult</returns>
+        /// <response code="201">Caso as informações sejam recuperadas com sucesso</response>
+        [HttpGet()]
+        [Route("/WeeklyWeather")]
+        public async Task<IActionResult> GetForecastAsync([FromQuery] WeatherGetDto request)
+        {
+
+            var response = await _weatherService.GetDailyWeatherAsync(request);
+
+            if (!response.IsSuccess) return BadRequest(response.Message);
+
+            return Ok(response);
         }
     }
 }

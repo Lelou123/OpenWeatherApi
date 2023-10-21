@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Weather.Domain.Entities
+﻿namespace Weather.Domain.Dtos
 {
-    public abstract class Weather : BaseEntity
-    {                
+    public class WeatherDto
+    {
         public DateTime Date { get; set; }
         public double Temperature { get; set; }
         public double TemperatureMin { get; set; }
@@ -18,10 +16,7 @@ namespace Weather.Domain.Entities
         public double WindSpeed { get; set; }
         public int Visibility { get; set; }
         public int CloudsAll { get; set; }
-        public bool IsCurrent { get; set; }
-        public Guid LocationId { get; set; }
+        public LocationDto Location { get; set; }
 
-        [ForeignKey(nameof(LocationId))]
-        public virtual Location Location { get; set; }
     }
 }

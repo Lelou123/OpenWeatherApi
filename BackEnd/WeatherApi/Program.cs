@@ -5,9 +5,11 @@ using System.Reflection;
 using Weather.Application.Services;
 using Weather.Domain.Interfaces.Repositories;
 using Weather.Domain.Interfaces.Services;
+using Weather.Domain.Interfaces.Services.ExternalServices;
 using Weather.Infra.AutoMapper;
 using Weather.Infra.Context;
 using Weather.Infra.Repositories;
+using Weather.Infra.Services;
 
 namespace WeatherApi
 {
@@ -17,34 +19,20 @@ namespace WeatherApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-
             builder.Services.AddDbContext<DbPgContext>(opt => opt.UseLazyLoadingProxies()
                 .UseNpgsql(builder.Configuration.GetConnectionString("ConnectionPG")));
 
 
-            
-            
-            //ApplicationServices
-            builder.Services.AddTransient<IWeatherService, WeatherService>();
 
+            BuildServices(builder);
 
-
-            //Others Services
-            builder.Services.AddTransient<IAutoMapperService, AutoMapperService>();
-
-
-            //Repositories
-            builder.Services.AddTransient<ICurrentWeatherRepository, CurrentWeatherRepository>();
-            builder.Services.AddTransient<IDailyWeatherRepository, DailyWeatherRepository>();
-            builder.Services.AddTransient<ILocationRepository, LocationRepository>();
-
+            BuildRepositories(builder);
 
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddControllers();
-            
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -65,7 +53,7 @@ namespace WeatherApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherApi", Version = "v1" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);                
+                c.IncludeXmlComments(xmlPath);
             });
 
             var app = builder.Build();
@@ -82,10 +70,31 @@ namespace WeatherApi
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.Run();
+        }
+
+
+        private static void BuildServices(WebApplicationBuilder builder)
+        {
+
+            //ApplicationServices
+            builder.Services.AddScoped<IWeatherService, WeatherService>();
+
+
+            //Others Services
+            builder.Services.AddScoped<IMappingService, AutoMapperService>();
+            builder.Services.AddScoped<IWeatherApiService, WeatherApiService>();
+        }
+
+        private static void BuildRepositories(WebApplicationBuilder builder)
+        {
+
+            //Repositories
+            builder.Services.AddScoped<ICurrentWeatherRepository, CurrentWeatherRepository>();
+            builder.Services.AddScoped<IDailyWeatherRepository, DailyWeatherRepository>();
+            builder.Services.AddScoped<ILocationRepository, LocationRepository>();
         }
     }
 }

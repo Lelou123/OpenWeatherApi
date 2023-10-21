@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Weather.Domain.Interfaces.Services;
+using Weather.Domain.Interfaces.Services.ExternalServices;
 
 namespace Weather.Infra.AutoMapper
 {
-    public class AutoMapperService : IAutoMapperService
+    public class AutoMapperService : IMappingService
     {
         private readonly IMapper _mapper;
 
