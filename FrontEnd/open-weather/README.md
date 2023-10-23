@@ -20,8 +20,6 @@ This frontend is a weather website that shows informations about the current and
 
 [Axios](https://axios-http.com/ptbr/docs/intro) to call the API
 
-[Material UI](https://mui.com/material-ui/) to create components
-
 <br />
 
 ## How to run the website
