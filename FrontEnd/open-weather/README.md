@@ -45,14 +45,7 @@ npm install
 
 <br />
 
-4 - Rename the .env.example file to .env and insert the REACT_APP_APIKEY variable with your api key:
-```bash
-mv .env.example .env
-```
-
-<br />
-
-10 - Run the Website:
+3 - Run the Website:
 ```bash
 npm run start
 ```
