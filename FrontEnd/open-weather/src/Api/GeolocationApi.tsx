@@ -1,5 +1,5 @@
 import axios from "axios";
-const apiKey = process.env.REACT_APP_API_KEY;
+const apiKey = '2e94d4f5db108ce80219d938903497dd';
 
 
 export interface GeolocationSearchResult {
