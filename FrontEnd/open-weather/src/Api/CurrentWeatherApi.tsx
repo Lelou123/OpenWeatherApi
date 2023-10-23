@@ -30,7 +30,7 @@ export interface CurrentWeatherResponse {
 export const CurrentWeatherApiFetch = async (selectedValue: GeolocationSearchResult) => {
 
     const { lat, lon } = selectedValue;
-    const apiUrl = `https://localhost:44398/CurrentWeather?Latitude=${lat}&Longitude=${lon}1&Units=1`;
+    const apiUrl = `https://weatheropenapi.azurewebsites.net/CurrentWeather?Latitude=${lat}&Longitude=${lon}1&Units=1`;
 
     try {
         const response = await axios.get(apiUrl);
