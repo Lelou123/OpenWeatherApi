@@ -15,23 +15,25 @@ function App() {
 
   useEffect(() => {
     const handlePermission = () => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const geolocationResult: GeolocationSearchResult = {
-            name: null,
-            local_names: null,
-            lat: latitude.toString(),
-            lon: longitude.toString(),
-            country: null,
-            state: null,
-          };
-          setSelectedValue(geolocationResult);
-        },
-        (error) => {
-          console.error('Error getting location', error);
-        }
-      );
+      if (!selectedValue) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const geolocationResult: GeolocationSearchResult = {
+              name: null,
+              local_names: null,
+              lat: latitude.toString(),
+              lon: longitude.toString(),
+              country: null,
+              state: null,
+            };
+            setSelectedValue(geolocationResult);
+          },
+          (error) => {
+            console.error('Error getting location', error);
+          }
+        );
+      }
     };
     handlePermission();
   }, []);
@@ -41,32 +43,32 @@ function App() {
   useEffect(() => {
     const apisFetch = async () => {
       try {
-        if (selectedValue) {          
+        if (selectedValue) {
           const dailyWeather = await CurrentWeatherApiFetch(selectedValue);
           if (dailyWeather !== null) {
             setDailyWeather(dailyWeather);
           }
-  
+
           const weeklyWeather = await WeeklyWeatherApiFetch(selectedValue);
-  
+
           if (weeklyWeather !== null) {
             setWeeklyWeather(weeklyWeather);
           }
         }
-      } catch (error) {        
+      } catch (error) {
         console.error('Ocorreu um erro:', error);
       }
     };
     apisFetch();
   }, [selectedValue]);
-  
+
 
 
 
   return (
     <div className="App">
 
-      <SearchComponent setSelectedValue={setSelectedValue} selectedValue={selectedValue} setWeatherResponseData={setWeeklyWeather} setDailyResponseData={setDailyWeather} />
+      <SearchComponent setWeatherResponseData={setWeeklyWeather} setDailyResponseData={setDailyWeather} />
 
       {selectedValue && dailyWeather &&
         <CurrentWeatherCard currentWeatherValue={dailyWeather} />}

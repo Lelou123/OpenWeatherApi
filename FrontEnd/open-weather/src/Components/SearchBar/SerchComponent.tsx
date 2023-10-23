@@ -5,21 +5,17 @@ import { CurrentWeatherApiFetch, CurrentWeatherResponse } from '../../Api/Curren
 import './SearchBar.css'
 
 
-interface SearchComponentProps {
-    setSelectedValue: (value: GeolocationSearchResult | null) => void;
-    selectedValue: GeolocationSearchResult | null;
+interface SearchComponentProps {        
     setWeatherResponseData: (value: WeeklyWeatherData[]) => void;
     setDailyResponseData: (value: CurrentWeatherResponse | null) => void;
 }
 
-const SearchComponent: React.FC<SearchComponentProps> = ({
-    setSelectedValue,
-    selectedValue,
+const SearchComponent: React.FC<SearchComponentProps> = ({        
     setWeatherResponseData,
     setDailyResponseData,
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [searchResults, setSearchResults] = useState<GeolocationSearchResult[]>([]);
+    const [searchResults, setSearchResults] = useState<GeolocationSearchResult[]>([]);    
 
     const callGeolocationApi = async () => {
         try {
@@ -32,15 +28,15 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
         }
     };
 
-    const apisFetch = async () => {
-        if (selectedValue) {
-            console.log(selectedValue);
+    const apisFetch = async (selectedValueParsed: GeolocationSearchResult | null) => {        
+        if (selectedValueParsed !== null) {
+            
             try {
-                const dailyWeather = await CurrentWeatherApiFetch(selectedValue);
+                const dailyWeather = await CurrentWeatherApiFetch(selectedValueParsed);
                 if (dailyWeather !== null) {
                     setDailyResponseData(dailyWeather);
                 }
-                const weeklyWeather = await WeeklyWeatherApiFetch(selectedValue);
+                const weeklyWeather = await WeeklyWeatherApiFetch(selectedValueParsed);
                 if (weeklyWeather !== null) {
                     setWeatherResponseData(weeklyWeather);
                 }
@@ -56,10 +52,9 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
     };
 
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-
-        const selectedValueParsed = JSON.parse(event.target.value);
-        setSelectedValue(selectedValueParsed);
-        apisFetch();
+        
+        const selectedValueParsed = JSON.parse(event.target.value);        
+        apisFetch(selectedValueParsed);
 
     };
 
@@ -74,14 +69,18 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                 <input type="text" value={searchTerm} onChange={handleInputChange} placeholder="Search your city weather" className="searchBar" />
                 <button onClick={handleButtonClick} className="searchButton">Search City</button>
             </div>
-            <select value='teste' onChange={handleSelectChange} className="selectComponent">
-                <option selected disabled hidden></option>
+
+            <select onChange={handleSelectChange} className="selectComponent">
+                
+                {searchResults.length > 0 ? <option>Selecione uma opção</option> : <></>}
+                                
                 {searchResults.map((result, index) => (
                     <option key={index} value={JSON.stringify(result)}>
-                        {index === 0 ? "Selecione uma opção" : `${result.name}, ${result.state}, ${result.country}`}
+                        {`${result.name}, ${result.state}, ${result.country}`}
                     </option>
                 ))}
             </select>
+        
         </div>
     );
 
