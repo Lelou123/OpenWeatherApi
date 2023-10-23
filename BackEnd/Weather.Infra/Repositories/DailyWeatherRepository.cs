@@ -6,7 +6,7 @@ namespace Weather.Infra.Repositories
 {
     public class DailyWeatherRepository : RepositoryBase<DailyWeather>, IDailyWeatherRepository
     {
-        public DailyWeatherRepository(DbPgContext context) : base(context)
+        public DailyWeatherRepository(DbSqlServerContext context) : base(context)
         {
         }
     }

@@ -31,7 +31,7 @@ export interface WeeklyWeatherData {
 }
 
 export const WeeklyWeatherApiFetch = async (props: GeolocationSearchResult) => {
-    const apiUrl = `https://localhost:44398/WeeklyWeather?Latitude=${props.lat}&Longitude=${props.lon}&Units=1`;
+    const apiUrl = `https://weatheropenapi.azurewebsites.net/WeeklyWeather?Latitude=${props.lat}&Longitude=${props.lon}&Units=1`;
 
     try {
         const response = await axios.get(apiUrl);

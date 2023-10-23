@@ -1,18 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Weather.Domain.Entities;
 
 namespace Weather.Infra.Context
 {
-    public class DbPgContext : DbContext
+    public class DbSqlServerContext : DbContext
     {
         public DbSet<CurrentWeather> CurrentWeathers { get; set; }
         public DbSet<DailyWeather> DailyWeathers { get; set; }
         public DbSet<Location> Locations { get; set; }
 
 
-        public DbPgContext(DbContextOptions<DbPgContext> options) : base(options)
-        {
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        public DbSqlServerContext(DbContextOptions<DbSqlServerContext> options) : base(options)
+        {            
         }
 
 
@@ -27,7 +31,7 @@ namespace Weather.Infra.Context
                 Console.WriteLine(ex.Message);
                 throw;
             }
-            
+
         }
     }
 }

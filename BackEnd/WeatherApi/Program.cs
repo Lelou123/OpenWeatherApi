@@ -21,8 +21,13 @@ namespace WeatherApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<DbPgContext>(opt => opt.UseLazyLoadingProxies()
-                .UseNpgsql(builder.Configuration.GetConnectionString("ConnectionPG")));
+            //builder.Services.AddDbContext<DbPgContext>(opt => opt.UseLazyLoadingProxies()
+            //    .UseNpgsql(builder.Configuration.GetConnectionString("ConnectionPG")));
+
+
+            builder.Services.AddDbContext<DbSqlServerContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionPG")));
+
 
 
 
@@ -62,11 +67,10 @@ namespace WeatherApi
 
             app.UseCors("CorsPolicy");
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
 
             app.UseHttpsRedirection();
 
