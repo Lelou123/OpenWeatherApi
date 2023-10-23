@@ -23,7 +23,7 @@ namespace WeatherApi.Controllers
         /// <returns>IActionResult</returns>
         /// <response code="201">Caso as informações sejam recuperadas com sucesso</response>
         [HttpGet()]
-        [Route("/DailyWeather")]
+        [Route("/CurrentWeather")]
         public async Task<IActionResult> GetWeatherAsync([FromQuery]WeatherGetDto request)
         {
 

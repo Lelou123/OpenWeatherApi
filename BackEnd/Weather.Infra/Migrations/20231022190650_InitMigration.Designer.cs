@@ -12,8 +12,8 @@ using Weather.Infra.Context;
 namespace Weather.Infra.Migrations
 {
     [DbContext(typeof(DbPgContext))]
-    [Migration("20231021131653_AddValidationWeather")]
-    partial class AddValidationWeather
+    [Migration("20231022190650_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,11 +48,11 @@ namespace Weather.Infra.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("numeric");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");

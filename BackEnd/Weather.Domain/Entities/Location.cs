@@ -1,9 +1,11 @@
-﻿namespace Weather.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Weather.Domain.Entities
 {
     public class Location : BaseEntity
-    {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+    {        
+        public decimal Latitude { get; set; }        
+        public decimal Longitude { get; set; }
         public string CityName { get; set; }
         public int CityId { get; set; }
         public string Country { get; set; }

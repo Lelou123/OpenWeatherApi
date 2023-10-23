@@ -44,20 +44,24 @@ namespace Weather.Application.Services
 
         public async Task<GetCurrentWeatherResponse> GetCurrentWeatherAsync(WeatherGetDto weatherGet)
         {
-
-            _weatherGetValidator.Validate(weatherGet);
-
-            var locationGetResult = (await _locationRepository.GetAllAsync(
-                    x => x.Latitude == weatherGet.Latitude && x.Longitude == weatherGet.Longitude)).SingleOrDefault();
-
             GetCurrentWeatherResponse response = new();
+            weatherGet.Longitude = Math.Round(weatherGet.Longitude, 2);
+            weatherGet.Latitude = Math.Round(weatherGet.Latitude, 2);
 
-            if (locationGetResult == null)
+            try
             {
-                WeatherOpenWeatherMapDto weatherGetResult = new();
-                
-                try
+                _weatherGetValidator.Validate(weatherGet);
+
+                var locationGetResult = (await _locationRepository.GetAllAsync(
+                        x => x.Latitude == weatherGet.Latitude && x.Longitude == weatherGet.Longitude)).FirstOrDefault();
+
+
+
+                if (locationGetResult == null)
                 {
+                    WeatherOpenWeatherMapDto weatherGetResult = new();
+
+
                     weatherGetResult = await _weatherApiService.GetWeatherData(weatherGet);
 
                     var location = await SaveCurrentWeatherLocationAsync(weatherGetResult);
@@ -67,61 +71,49 @@ namespace Weather.Application.Services
                     response = MapCurrentWeatherDto(weather);
 
                 }
-                catch (Exception ex)
+                else
                 {
-                    return new GetCurrentWeatherResponse()
-                    {
-                        Exception = ex,
-                        Message = ex.Message,
-                        IsSuccess = false
-                    };
-                }
-                
+                    var lastWeatherRecord = (await _currentWeatherRepository.GetAllAsync(x => x.LocationId == locationGetResult.Id && x.IsCurrent))
+                                                                        .OrderByDescending(x => x.CreatedAt).FirstOrDefault();
 
-            }
-            else
-            {
-                var lastWeatherRecord = (await _currentWeatherRepository.GetAllAsync(x => x.LocationId == locationGetResult.Id && x.IsCurrent))
-                                                                    .OrderByDescending(x => x.CreatedAt).FirstOrDefault();
-
-                if (lastWeatherRecord == null || (DateTime.UtcNow - lastWeatherRecord.CreatedAt).TotalMinutes > 15)
-                {
-                    try
+                    if (lastWeatherRecord == null || (DateTime.UtcNow - lastWeatherRecord.CreatedAt).TotalMinutes > 15)
                     {
+
                         var weatherGetResult = await _weatherApiService.GetWeatherData(weatherGet);
 
                         var weather = await SaveCurrentWeatherAsync(weatherGetResult, locationGetResult.Id);
 
                         response = MapCurrentWeatherDto(weather);
+
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        return new GetCurrentWeatherResponse()
-                        {
-                            Exception = ex,
-                            Message = ex.Message,
-                            IsSuccess = false
-                        };
+                        response = MapCurrentWeatherDto(lastWeatherRecord);
                     }
-                    
-                }
-                else
-                {
-                    response = MapCurrentWeatherDto(lastWeatherRecord);
                 }
             }
+            catch (Exception ex)
+            {
+                return new GetCurrentWeatherResponse()
+                {
+                    Exception = ex,
+                    Message = ex.Message.ToString(),
+                    IsSuccess = false
+                };
+            }
+
 
             return response;
         }
-   
+
 
         private async Task<Location> SaveCurrentWeatherLocationAsync(WeatherOpenWeatherMapDto weather)
         {
 
             Location location = new()
             {
-                Latitude = weather.Coord.Lat,
-                Longitude = weather.Coord.Lon,
+                Latitude = Math.Round(weather.Coord.Lat, 2),
+                Longitude = Math.Round(weather.Coord.Lon, 2),
                 CityName = weather.Name,
                 CityId = weather.Id,
                 Country = weather.Sys.Country
@@ -145,7 +137,7 @@ namespace Weather.Application.Services
         public GetCurrentWeatherResponse MapCurrentWeatherDto(CurrentWeather weather)
         {
             var weatherDto = _mappingService.Map<CurrentWeatherDto>(weather);
-            
+
             return new GetCurrentWeatherResponse()
             {
                 Data = weatherDto,
@@ -153,77 +145,72 @@ namespace Weather.Application.Services
             };
         }
 
-        
+
 
 
         public async Task<GetDailyWeatherResponse> GetDailyWeatherAsync(WeatherGetDto weatherGet)
         {
-            _weatherGetValidator.Validate(weatherGet);
-
-            var locationGetResult = (await _locationRepository.GetAllAsync(
-                    x => x.Latitude == weatherGet.Latitude && x.Longitude == weatherGet.Longitude)).SingleOrDefault();
-
-
             GetDailyWeatherResponse response = new();
+            weatherGet.Longitude = Math.Round(weatherGet.Longitude, 2);
+            weatherGet.Latitude = Math.Round(weatherGet.Latitude, 2);
 
-            if (locationGetResult == null)
+            try
             {
-                ForecastOpenWeatherMapDto weatherGetResult = new();
-                try
+                _weatherGetValidator.Validate(weatherGet);
+
+                var locationGetResult = (await _locationRepository.GetAllAsync(
+                        x => x.Latitude == weatherGet.Latitude && x.Longitude == weatherGet.Longitude)).FirstOrDefault();
+
+
+                if (locationGetResult == null)
                 {
+                    ForecastOpenWeatherMapDto weatherGetResult = new();
+
                     weatherGetResult = await _weatherApiService.GetForecastData(weatherGet);
 
                     var location = await SaveDailyWeatherLocationAsync(weatherGetResult);
 
                     var weather = await SaveDailyWeatherAsync(weatherGetResult, location.Id);
-                    
+
                     response = MapDailyWeatherDto(weather);
-                }
-                catch (Exception ex)
-                {
-                    return new GetDailyWeatherResponse()
-                    {
-                        Exception = ex,
-                        Message = ex.Message,
-                        IsSuccess = false
-                    };
-                }                
-            }
-            else
-            {
-                var lastWeatherRecordList = (await _dailyWeatherRepository.GetAllAsync(x => x.LocationId == locationGetResult.Id && !x.IsCurrent))
-                                                                    .OrderByDescending(x => x.CreatedAt).ToList();
-
-                var lastWeatherRecordFirst = lastWeatherRecordList.FirstOrDefault();
-
-                if (lastWeatherRecordFirst == null || (DateTime.UtcNow - lastWeatherRecordFirst.CreatedAt).TotalHours > 24)
-                {
-
-                    ForecastOpenWeatherMapDto weatherGetResult = new();
-                    try
-                    {
-                        weatherGetResult = await _weatherApiService.GetForecastData(weatherGet);                        
-
-                        var weather = await SaveDailyWeatherAsync(weatherGetResult, locationGetResult.Id);
-
-                        response = MapDailyWeatherDto(weather);
-                    }
-                    catch (Exception ex)
-                    {
-                        return new GetDailyWeatherResponse()
-                        {
-                            Exception = ex,
-                            Message = ex.Message,
-                            IsSuccess = false
-                        };
-                    }
 
                 }
                 else
                 {
-                    response = MapDailyWeatherDto(lastWeatherRecordList);
+                    var lastWeatherRecordList = (await _dailyWeatherRepository.GetAllAsync(x => x.LocationId == locationGetResult.Id && !x.IsCurrent))
+                                                                        .OrderByDescending(x => x.CreatedAt).ToList();
+
+                    var lastWeatherRecordFirst = lastWeatherRecordList.FirstOrDefault();
+
+                    if (lastWeatherRecordFirst == null || (DateTime.UtcNow - lastWeatherRecordFirst.CreatedAt).TotalHours > 24)
+                    {
+
+                        ForecastOpenWeatherMapDto weatherGetResult = new();
+
+                        weatherGetResult = await _weatherApiService.GetForecastData(weatherGet);
+
+                        var weather = await SaveDailyWeatherAsync(weatherGetResult, locationGetResult.Id);
+
+                        response = MapDailyWeatherDto(weather);
+
+
+                    }
+                    else
+                    {
+                        response = MapDailyWeatherDto(lastWeatherRecordList);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                return new GetDailyWeatherResponse()
+                {
+                    Exception = ex,
+                    Message = ex.Message,
+                    IsSuccess = false
+                };
+            }
+
 
             return response;
         }
@@ -234,8 +221,8 @@ namespace Weather.Application.Services
 
             Location location = new()
             {
-                Latitude = weather.City.Coord.Lat,
-                Longitude = weather.City.Coord.Lat,
+                Latitude = Math.Round(weather.City.Coord.Lat, 2),
+                Longitude = Math.Round(weather.City.Coord.Lon, 2),
                 CityName = weather.City.Name,
                 CityId = weather.City.Id,
                 Country = weather.City.Country
@@ -248,7 +235,7 @@ namespace Weather.Application.Services
 
         private async Task<List<DailyWeather>> SaveDailyWeatherAsync(ForecastOpenWeatherMapDto weatherGetResult, Guid locationId)
         {
-            
+
             var weather = _mappingService.Map<List<DailyWeather>>(weatherGetResult.List);
 
             foreach (var item in weather)

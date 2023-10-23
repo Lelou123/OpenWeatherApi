@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Weather.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMigrations : Migration
+    public partial class InitMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +16,8 @@ namespace Weather.Infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Latitude = table.Column<double>(type: "double precision", nullable: false),
-                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    Latitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    Longitude = table.Column<decimal>(type: "numeric", nullable: false),
                     CityName = table.Column<string>(type: "text", nullable: false),
                     CityId = table.Column<int>(type: "integer", nullable: false),
                     Country = table.Column<string>(type: "text", nullable: false),
@@ -47,6 +48,7 @@ namespace Weather.Infra.Migrations
                     WindSpeed = table.Column<double>(type: "double precision", nullable: false),
                     Visibility = table.Column<int>(type: "integer", nullable: false),
                     CloudsAll = table.Column<int>(type: "integer", nullable: false),
+                    IsCurrent = table.Column<bool>(type: "boolean", nullable: false),
                     LocationId = table.Column<Guid>(type: "uuid", nullable: false),
                     Discriminator = table.Column<string>(type: "text", nullable: false),
                     RainVolume = table.Column<double>(type: "double precision", nullable: true),
