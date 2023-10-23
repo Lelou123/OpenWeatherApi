@@ -31,10 +31,10 @@ Covidando is an application to view and filter COVID 19 statistics
 
 
 
-The cloud and deploy were done in azure and vercel: 
+The cloud and deploy were done in azure: 
 
-[BackEnd](https://portal.azure.com/) to deploy the backEnd
+[BackEnd](https://weatheropenapi.azurewebsites.net/swagger/index.html) to deploy the backEnd
 
-[FrontEnd](https://vercel.com/) to deploy the frontend
+[FrontEnd](https://weatheropenapi.azurewebsites.net) to deploy the frontend
 
 
