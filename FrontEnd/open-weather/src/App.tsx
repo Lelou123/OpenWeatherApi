@@ -70,10 +70,10 @@ function App() {
 
       <SearchComponent setWeatherResponseData={setWeeklyWeather} setDailyResponseData={setDailyWeather} />
 
-      {selectedValue && dailyWeather &&
+      {dailyWeather &&
         <CurrentWeatherCard currentWeatherValue={dailyWeather} />}
 
-      {selectedValue && weeklyWeather && (
+      {weeklyWeather && (
         <WeatherAccordion weeklyWeatherValue={weeklyWeather} />
       )}
 
