@@ -23,6 +23,7 @@ export interface CurrentWeatherResponse {
         cityName: string;
         cityId: number;
         country: string;
+        state: string;
     };
 }
 

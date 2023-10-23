@@ -14,7 +14,7 @@ const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({currentWeatherVa
 
     return (
         <div className="current-weather-card">
-            <h2>{currentWeatherValue.location.cityName}, {currentWeatherValue.location.country}</h2>
+            <h2>{currentWeatherValue.location.cityName} - {currentWeatherValue.location.state} - {currentWeatherValue.location.country}</h2>
             <p>{currentWeatherValue.weatherDescription}</p>
             <p>Feels Like: {currentWeatherValue.feelsLike}°C</p>
             <p>Wind: {currentWeatherValue.windSpeed} m/s</p>

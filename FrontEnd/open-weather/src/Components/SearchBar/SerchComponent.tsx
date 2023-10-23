@@ -34,6 +34,9 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
             try {
                 const dailyWeather = await CurrentWeatherApiFetch(selectedValueParsed);
                 if (dailyWeather !== null) {
+                    dailyWeather.location.cityName = selectedValueParsed.name ?? dailyWeather.location.cityName;
+                    console.log(selectedValueParsed.state);
+                    dailyWeather.location.state = selectedValueParsed.state ?? '';
                     setDailyResponseData(dailyWeather);
                 }
                 const weeklyWeather = await WeeklyWeatherApiFetch(selectedValueParsed);
