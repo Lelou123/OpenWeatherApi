@@ -2,99 +2,93 @@
 using System.Linq.Expressions;
 using Weather.Domain.Interfaces.Repositories;
 
-namespace Weather.Infra.Repositories
+namespace Weather.Infra.Repositories;
+
+public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
 {
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
+    private readonly DbContext _context;
+    private readonly DbSet<TEntity> _dbSet;
+
+    protected RepositoryBase(DbContext context)
     {
-        private readonly DbContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        _context = context;
+        _dbSet = context.Set<TEntity>();
+    }
 
-        public RepositoryBase(DbContext context)
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? filter = null)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        if (filter != null)
         {
-            _context = context;
-            _dbSet = context.Set<TEntity>();
+            query = query.Where(filter);
         }
+        return await query.ToListAsync();
+    }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null)
-        {
-            IQueryable<TEntity> query = _dbSet;
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-            return await query.ToListAsync();
-        }
-
-        public virtual async Task<TEntity?> GetByIdAsync(object id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
+    public virtual async Task<TEntity?> GetByIdAsync(object id)
+    {
+        return await _dbSet.FindAsync(id);
+    }
 
 
-        public virtual async Task InsertAsync(TEntity entity)
-        {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
+    public virtual async Task InsertAsync(TEntity entity)
+    {
+        await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
+    }
 
-        public virtual async Task InsertRangeAsync(IEnumerable<TEntity> entities)
-        {
-            await _dbSet.AddRangeAsync(entities);
-            await _context.SaveChangesAsync();
-        }
+    public virtual async Task InsertRangeAsync(IEnumerable<TEntity> entities)
+    {
+        await _dbSet.AddRangeAsync(entities);
+        await _context.SaveChangesAsync();
+    }
 
 
-        public virtual async Task UpdateAsync(TEntity entity)
+    public virtual async Task UpdateAsync(TEntity entity)
+    {
+        _dbSet.Attach(entity);
+        
+        _context.Entry(entity).State = EntityState.Modified;
+        
+        var propertyUpdatedAt = entity.GetType().GetProperty("UpdatedAt");
+        propertyUpdatedAt?.SetValue(entity, DateTime.UtcNow);
+
+        await _context.SaveChangesAsync();
+    }
+
+    public virtual async Task DeleteAsync(object id)
+    {
+        var entityToDelete = await _dbSet.FindAsync(id);
+        if (entityToDelete != null)
+            await DeleteAsync(entityToDelete);
+    }
+
+    public virtual async Task DeleteAsync(TEntity entity)
+    {
+        if (_context.Entry(entity).State == EntityState.Detached)
         {
             _dbSet.Attach(entity);
-
-            //_context.Entry(entity).Reload();
-            _context.Entry(entity).State = EntityState.Modified;
-
-
-            var propertyUpdatedAt = entity.GetType().GetProperty("UpdatedAt");
-            propertyUpdatedAt.SetValue(entity, DateTime.UtcNow);
-
-            await _context.SaveChangesAsync();
         }
 
-        public virtual async Task DeleteAsync(object id)
-        {
-            TEntity? entityToDelete = await _dbSet.FindAsync(id);
-            if (entityToDelete != null)
-                await DeleteAsync(entityToDelete);
-        }
+        var propertyUpdatedAt = entity.GetType().GetProperty("UpdatedAt");
+        propertyUpdatedAt?.SetValue(entity, DateTime.Now);
 
-        public virtual async Task DeleteAsync(TEntity entity)
-        {
-            if (_context.Entry(entity).State == EntityState.Detached)
-            {
-                _dbSet.Attach(entity);
-            }
+        _context.Entry(entity).State = EntityState.Modified;
 
-            var propertyUpdatedAt = entity.GetType().GetProperty("UpdatedAt");
-            propertyUpdatedAt.SetValue(entity, DateTime.Now);
-
-            _context.Entry(entity).State = EntityState.Modified;
-
-            await _context.SaveChangesAsync();
-        }
-
-
-        public async Task<IEnumerable<TEntity>> GetAllIncludingAsync(params Expression<Func<TEntity, object>>[] includeProperties)
-        {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
-
-            if (includeProperties != null)
-            {
-                foreach (var includeProperty in includeProperties)
-                {
-                    query = query.Include(includeProperty);
-                }
-            }
-
-            return await query.ToListAsync();
-        }
-
+        await _context.SaveChangesAsync();
     }
+
+
+    public async Task<IEnumerable<TEntity>> GetAllIncludingAsync(params Expression<Func<TEntity, object>>[]? includeProperties)
+    {
+        IQueryable<TEntity> query = _context.Set<TEntity>();
+
+        if (includeProperties != null)
+        {
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+        }
+
+        return await query.ToListAsync();
+    }
+
 }

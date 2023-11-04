@@ -13,98 +13,94 @@ using Weather.Infra.Repositories;
 using Weather.Infra.Services;
 using Weather.Infra.Validators;
 
-namespace WeatherApi
+namespace WeatherApi;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        //builder.Services.AddDbContext<DbPgContext>(opt => opt.UseLazyLoadingProxies()
+        //    .UseNpgsql(builder.Configuration.GetConnectionString("ConnectionPG")));
+
+
+        builder.Services.AddDbContext<DbSqlServerContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionPG")));
+        
+        
+        BuildServices(builder);
+
+        BuildRepositories(builder);
+        
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+        builder.Services.AddControllers();
+
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+
+        builder.Services.AddCors(options =>
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            //builder.Services.AddDbContext<DbPgContext>(opt => opt.UseLazyLoadingProxies()
-            //    .UseNpgsql(builder.Configuration.GetConnectionString("ConnectionPG")));
-
-
-            builder.Services.AddDbContext<DbSqlServerContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionPG")));
+            options.AddPolicy("CorsPolicy",
+                corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("Content-Disposition"));
+        });
 
 
-
-
-            BuildServices(builder);
-
-            BuildRepositories(builder);
-
-
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-            builder.Services.AddControllers();
-
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
-                                      .AllowAnyMethod()
-                                      .AllowAnyHeader()
-                                      .WithExposedHeaders("Content-Disposition"));
-            });
-
-
-            //Configure Swagger
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherApi", Version = "v1" });
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-            });
-
-            var app = builder.Build();
-
-            app.UseCors("CorsPolicy");
-
-
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
-        }
-
-
-        private static void BuildServices(WebApplicationBuilder builder)
+        //Configure Swagger
+        builder.Services.AddSwaggerGen(c =>
         {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherApi", Version = "v1" });
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+        });
 
-            //ApplicationServices
-            builder.Services.AddScoped<IWeatherService, WeatherService>();
+        var app = builder.Build();
+
+        app.UseCors("CorsPolicy");
 
 
-            //Others Services
-            builder.Services.AddScoped<IMappingService, AutoMapperService>();
-            builder.Services.AddScoped<IWeatherApiService, WeatherApiService>();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-            //Validators
-            builder.Services.AddScoped<IWeatherGetDtoValidator, WeatherGetDtoValidator>();
 
-        }
+        app.UseHttpsRedirection();
 
-        private static void BuildRepositories(WebApplicationBuilder builder)
-        {
+        app.UseAuthorization();
 
-            //Repositories
-            builder.Services.AddScoped<ICurrentWeatherRepository, CurrentWeatherRepository>();
-            builder.Services.AddScoped<IDailyWeatherRepository, DailyWeatherRepository>();
-            builder.Services.AddScoped<ILocationRepository, LocationRepository>();
-        }
+        app.MapControllers();
+
+        app.Run();
+    }
+
+
+    private static void BuildServices(WebApplicationBuilder builder)
+    {
+
+        //ApplicationServices
+        builder.Services.AddScoped<IWeatherService, WeatherService>();
+
+
+        //Others Services
+        builder.Services.AddScoped<IMappingService, AutoMapperService>();
+        builder.Services.AddScoped<IWeatherApiService, WeatherApiService>();
+
+        //Validators
+        builder.Services.AddScoped<IWeatherGetDtoValidator, WeatherGetDtoValidator>();
+
+    }
+
+    private static void BuildRepositories(WebApplicationBuilder builder)
+    {
+
+        //Repositories
+        builder.Services.AddScoped<ICurrentWeatherRepository, CurrentWeatherRepository>();
+        builder.Services.AddScoped<IDailyWeatherRepository, DailyWeatherRepository>();
+        builder.Services.AddScoped<ILocationRepository, LocationRepository>();
     }
 }

@@ -2,12 +2,11 @@
 using Weather.Domain.Interfaces.Repositories;
 using Weather.Infra.Context;
 
-namespace Weather.Infra.Repositories
+namespace Weather.Infra.Repositories;
+
+public class DailyWeatherRepository : RepositoryBase<DailyWeather>, IDailyWeatherRepository
 {
-    public class DailyWeatherRepository : RepositoryBase<DailyWeather>, IDailyWeatherRepository
+    public DailyWeatherRepository(DbSqlServerContext context) : base(context)
     {
-        public DailyWeatherRepository(DbSqlServerContext context) : base(context)
-        {
-        }
     }
 }

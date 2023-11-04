@@ -2,12 +2,11 @@
 using Weather.Domain.Interfaces.Repositories;
 using Weather.Infra.Context;
 
-namespace Weather.Infra.Repositories
+namespace Weather.Infra.Repositories;
+
+public class CurrentWeatherRepository : RepositoryBase<CurrentWeather>, ICurrentWeatherRepository
 {
-    public class CurrentWeatherRepository : RepositoryBase<CurrentWeather>, ICurrentWeatherRepository
+    public CurrentWeatherRepository(DbSqlServerContext context) : base(context)
     {
-        public CurrentWeatherRepository(DbSqlServerContext context) : base(context)
-        {
-        }
     }
 }

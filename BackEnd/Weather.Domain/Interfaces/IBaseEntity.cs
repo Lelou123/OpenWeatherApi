@@ -1,7 +1,6 @@
-﻿namespace Weather.Domain.Interfaces
+﻿namespace Weather.Domain.Interfaces;
+
+public interface IBaseEntity
 {
-    public interface IBaseEntity
-    {
-        public Guid Id { get; set; }
-    }
+    public Guid Id { get; set; }
 }

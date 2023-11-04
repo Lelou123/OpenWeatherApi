@@ -1,40 +1,39 @@
 ﻿using AutoMapper;
 using Weather.Domain.Interfaces.Services.ExternalServices;
 
-namespace Weather.Infra.AutoMapper
+namespace Weather.Infra.AutoMapper;
+
+public class AutoMapperService : IMappingService
 {
-    public class AutoMapperService : IMappingService
+    private readonly IMapper _mapper;
+
+    public AutoMapperService(IMapper mapper)
     {
-        private readonly IMapper _mapper;
+        _mapper = mapper;
+    }
 
-        public AutoMapperService(IMapper mapper)
+    public TDestination Map<TDestination>(object source)
+    {
+        if(source == null)
         {
-            _mapper = mapper;
+            throw new Exception("Source cannot be null");
         }
 
-        public TDestination Map<TDestination>(object source)
-        {
-            if(source == null)
-            {
-                throw new Exception("Source cannot be null");
-            }
+        return _mapper.Map<TDestination>(source);
+    }
 
-            return _mapper.Map<TDestination>(source);
+    public void Map<TSource, TDestination>(TSource source, TDestination destination)
+    {
+        _mapper.Map(source, destination);
+    }
+
+    public IEnumerable<TDestination> MapRange<TDestination>(IEnumerable<object> source)
+    {
+        if (source == null)
+        {
+            throw new Exception("Source cannot be null");
         }
 
-        public void Map<TSource, TDestination>(TSource source, TDestination destination)
-        {
-            _mapper.Map(source, destination);
-        }
-
-        public IEnumerable<TDestination> MapRange<TDestination>(IEnumerable<object> source)
-        {
-            if (source == null)
-            {
-                throw new Exception("Source cannot be null");
-            }
-
-            return _mapper.Map<IEnumerable<TDestination>>(source);
-        }
+        return _mapper.Map<IEnumerable<TDestination>>(source);
     }
 }

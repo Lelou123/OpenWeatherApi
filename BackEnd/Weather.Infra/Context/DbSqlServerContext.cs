@@ -1,37 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Weather.Domain.Entities;
 
-namespace Weather.Infra.Context
+namespace Weather.Infra.Context;
+
+public class DbSqlServerContext : DbContext
 {
-    public class DbSqlServerContext : DbContext
+    public DbSet<CurrentWeather> CurrentWeathers { get; set; }
+    public DbSet<DailyWeather> DailyWeathers { get; set; }
+    public DbSet<Location> Locations { get; set; }
+
+
+    public DbSqlServerContext(DbContextOptions<DbSqlServerContext> options) : base(options)
+    {            
+    }
+
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        public DbSet<CurrentWeather> CurrentWeathers { get; set; }
-        public DbSet<DailyWeather> DailyWeathers { get; set; }
-        public DbSet<Location> Locations { get; set; }
-
-
-        public DbSqlServerContext(DbContextOptions<DbSqlServerContext> options) : base(options)
-        {            
-        }
-
-
-        protected override void OnModelCreating(ModelBuilder builder)
+        try
         {
-            try
-            {
-                base.OnModelCreating(builder);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-
+            base.OnModelCreating(builder);
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+
     }
 }

@@ -1,6 +1,5 @@
-﻿namespace Weather.Domain.Entities
+﻿namespace Weather.Domain.Entities;
+
+public class CurrentWeather : Weather
 {
-    public class CurrentWeather : Weather
-    {
-    }
 }

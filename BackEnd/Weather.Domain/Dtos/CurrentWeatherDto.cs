@@ -1,6 +1,5 @@
-﻿namespace Weather.Domain.Dtos
+﻿namespace Weather.Domain.Dtos;
+
+public class CurrentWeatherDto : WeatherDto
 {
-    public class CurrentWeatherDto : WeatherDto
-    {
-    }
 }

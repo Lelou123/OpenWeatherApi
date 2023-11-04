@@ -2,12 +2,11 @@
 using Weather.Domain.Interfaces.Repositories;
 using Weather.Infra.Context;
 
-namespace Weather.Infra.Repositories
+namespace Weather.Infra.Repositories;
+
+public class LocationRepository : RepositoryBase<Location>, ILocationRepository
 {
-    public class LocationRepository : RepositoryBase<Location>, ILocationRepository
+    public LocationRepository(DbSqlServerContext context) : base(context)
     {
-        public LocationRepository(DbSqlServerContext context) : base(context)
-        {
-        }
     }
 }
